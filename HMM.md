@@ -5,7 +5,7 @@ To build a Hidden Markov Model (HMM) profile for the Kunitz-type protease inhibi
 - PFAM identifier: PF00014
 - Structure resolution ≤ 3 Å
 The filtered search returned 135 entries. Before downloading the results, we generated a custom tabular report (available in this repository) containing the Entry ID, Sequence, and Chain identifier.
-The search specifically targeted PF00014, but many structures contained multiple chains. Thus, in homodimeric entries, identical chains (e.g., Chains A and B) were reduced to a single representative to avoid sequence redundancy. In heterodimeric complexes containing auxiliary fragments (e.g., Chains Q or J), only the primary Kunitz monodomain was retained based on sequence length, in order to produce a non-redundant, high-resolution dataset suitable for HMM construction.
+The search specifically targeted PF00014, but many structures contained multiple chains. Thus, in homodimeric entries, identical chains (e.g., Chains A and B) were reduced to a single representative to avoid sequence redundancy.
 
 ---
 ### ASSESSMENT OF THE TRAINING SET 
@@ -20,11 +20,10 @@ The filtered table was converted into FASTA format, exported as a .txt file, and
 awk -F "," '{if ($1 != "" && length($2)<80 && length($2)>40) print $1,$3,$2}' rcsb_pdb_custom_report_20260415204951.csv | tr -d '"' | awk '{print ">"$1$3;print $2}'> pdb_seqs.txt
 ```
 
-After filtering were retained a total of 102 sequences.
 ```
 grep ">" pdb_seqs.txt | wc
 ```
-102     102     714
+After filtering were retained a total of 102 sequences.
 
 ---
 
@@ -97,8 +96,8 @@ hmmbuild ./kunitz_clean.hmm ./kunitz_clean.ali
 The profile HMM logo was visualized by uploading the generated HMM file to Skylign, which provides a graphical representation of residue conservation and positional variability within the alignment.
 
 ---
-### VALIDATION
-#### TEST SET GENERATION
+
+### TEST SET GENERATION
 The integrity of both FASTA datasets was first verified by counting the number of protein entries. The negative dataset contained 574,229 sequences, while the positive dataset contained 398 sequences. Both compressed FASTA files were then extracted to generate the datasets: 
 
 ```
@@ -190,7 +189,7 @@ The matched and non-matched negatives were then merged into a single file, which
 cat negative_kunitz.match negative_kunitz.nomatch > negative_kunitz_tot.match
 ```
 ---
-# K-Fold Cross-Validation 
+### K-Fold Cross-Validation 
 To evaluate the robustness of the model, the positive and negative datasets were divided into two subsets for cross-validation.
 Before splitting, the negative dataset was randomly shuffled:
 
@@ -219,7 +218,7 @@ wc kunitz_set_1.txt kunitz_set_2.txt
 574611 1723833 15563837 total
 
 ---
-### Threshold optimization and Performance evaluation 
+#### Threshold optimization and Performance evaluation 
 To evaluate model performance across multiple E-value thresholds (10ˆ-1 - 10ˆ-15), the script performance.py was executed iteratively using a for loop.
 - Optimization Set 1
 ```
